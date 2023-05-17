@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +16,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+  return view('welcome');
+})->name('home');
+
+Route::prefix('auth')->group(function () {
+  Route::get('redirect', [AuthController::class, 'googleAuthRedirect'])->name('auth.redirect');
+  Route::get('callback', [AuthController::class, 'googleAuthLogin'])->name('auth.login');
+  Route::post('logout', [AuthController::class, 'googleAuthLogout'])->name('auth.logout');
 });
+
