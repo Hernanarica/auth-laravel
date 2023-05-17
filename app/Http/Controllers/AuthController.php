@@ -14,10 +14,16 @@ class AuthController extends Controller
       $token = $user->createToken('api-token')->plainTextToken;
 
       return response()->json([
-        'user'  => $user,
-        'token' => $token,
+        'status' => 'success',
+        'user'   => $user,
+        'token'  => $token,
       ]);
     }
+
+    return response()->json([
+      'status'  => 'error',
+      'message' => 'Credenciales invalidas',
+    ]);
   }
 
   function logout()
