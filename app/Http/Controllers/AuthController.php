@@ -4,19 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-  function googleAuthRedirect()
+  function googleAuthLogin(string $accessToken)
   {
-    return Socialite::driver('google')->redirect();
-  }
-
-  function googleAuthLogin()
-  {
-    $user = Socialite::driver('google')->user();
+    $user = Socialite::driver('google')->userFromToken($accessToken);
 
     $user = User::updateOrCreate([
       'google_id' => $user->id,
@@ -28,19 +22,20 @@ class AuthController extends Controller
       'google_refresh_token' => $user->refreshToken,
     ]);
 
-    Auth::login($user);
-
-    return to_route('home');
+    return response()->json([
+      'status' => 'success',
+      'user'   => $user,
+      'token'  => $user->createToken('api_token')->plainTextToken,
+    ]);
   }
 
   function googleAuthLogout(Request $request)
   {
-    Auth::logout();
+    $user = $request->user();
+    $user->tokens()->delete();
 
-    $request->session()->invalidate();
-
-    $request->session()->regenerateToken();
-
-    return to_route('home');
+    return response()->json([
+      'status' => 'success'
+    ]);
   }
 }
