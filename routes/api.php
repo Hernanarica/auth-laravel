@@ -22,11 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('users', UserController::class);
 
-Route::prefix('auth')->group(function () {
-  Route::middleware('auth:sanctum')->group(function () {
-    Route::post('logout', [AuthController::class, 'logout']);
-  });
-
-  Route::post('login', [AuthController::class, 'login']);
+Route::controller(AuthController::class)->prefix('auth')->group(function () {
+  Route::post('logout', 'logout')->middleware('auth:sanctum');
+  Route::post('login', 'login');
 });
-
